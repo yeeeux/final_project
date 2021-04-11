@@ -32,15 +32,16 @@ def users_name():
                     results1.append(i)
 
     if 'department' in request.args:
-
         depart = str(request.args['department']).lower()
         tumbler2 = True
         for depa in data.keys():
             if depa == "Department":
                 for i in (data[depa].keys()):
-                    if depart == data[depa][i]:
+                    if depart == data[depa][i].lower():
+                      
                         results2.append(data['username'][i])
-
+    print(results1)
+    print(results2)
     if results1 != [] and results2 != []:
         for item in results1:
             if item in results2:
