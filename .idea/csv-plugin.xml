@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\api\test_users_without_fixtures.py">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\api\users.csv">
           <value>
             <Attribute>

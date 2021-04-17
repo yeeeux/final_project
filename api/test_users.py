@@ -104,3 +104,28 @@ def test_text_users_with_filter7_negative(client):
 def test_text_users_with_filter8_negative(client):
     rv = client.get("/users?username=ye&department=art-keks")
     assert rv.json == {'username': []}
+
+
+def test_text_department_positive1(client):
+    rv = client.get("/department")
+    assert rv.json == {"departments": ["ART-Tanks", "ART-Maps"]}
+
+
+def test_text_department__with_filterpositive2(client):
+    rv = client.get("/department?name=Tanks")
+    assert rv.json == {"departments": ["ART-Tanks"]}
+
+
+def test_text_department__with_filter_low_case(client):
+    rv = client.get("/department?name=tanks")
+    assert rv.json == {"departments": ["ART-Tanks"]}
+
+
+def test_text_department__with_filter_high_case(client):
+    rv = client.get("/department?name=tanks")
+    assert rv.json == {"departments": ["ART-Tanks"]}
+
+
+def test_text_department__negative(client):
+    rv = client.get("/department?name=kek")
+    assert rv.json == {"departments": []}

@@ -86,7 +86,8 @@ def create_app():
                 if departmen == "Department":
                     for i in (data[departmen].values()):
                         if departament in i.lower():
-                            dep_result1.append(i)
+                            if i not in dep_result1:
+                                dep_result1.append(i)
         else:
             for unit in data.keys():
                 if unit == "Department":
