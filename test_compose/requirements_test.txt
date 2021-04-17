@@ -1,0 +1,6 @@
+flask
+pytest
+requests
+flask
+flask_restful
+pandas
