@@ -8,11 +8,17 @@ api = Api(app)
 data = pd.read_csv('users_data.csv')  # read CSV
 data = data.to_dict()  # convert dataframe to dictionary
 
+
 def create_app():
     app = Flask(__name__)
+
     @app.route('/users', methods=['GET'])
     def users_name():
         results1 = []
+        results1_id = []
+        results1_email = []
+        results1_department = []
+        results1_join = []
         results2 = []
         results3 = []
         tumbler1 = False
@@ -31,6 +37,18 @@ def create_app():
                 if unit == "username":
                     for i in (data[unit].values()):
                         results1.append(i)
+                elif unit == "userId":
+                    for i in (data[unit].values()):
+                        results1_id.append(i)
+                elif unit == "email":
+                    for i in (data[unit].values()):
+                        results1_email.append(i)
+                elif unit == "Department":
+                    for i in (data[unit].values()):
+                        results1_department.append(i)
+                elif unit == "data_joined":
+                    for i in (data[unit].values()):
+                        results1_join.append(i)
 
         if 'department' in request.args:
             depart = str(request.args['department']).lower()
@@ -42,24 +60,21 @@ def create_app():
                             results2.append(data['username'][i])
         print(results1)
         print(results2)
-        if results1 != [] and results2 != []:
-            for item in results1:
-                if item in results2:
-                    results3.append(item)
-            if not tumbler1:
-                return f'Пользователи в отделе {depart} %s' % results3
-            else:
-                return f'Пользователи в отделе {depart} с вхождением {user}: %s' % results3
-        elif results1 != [] and results2 == []:
-            return jsonify('data: %s' % results1)
-        elif results2 != [] and results1 == []:
-            return jsonify('data: %s' % results2)
-        else:
-            if not tumbler2:
-                return f"Отсутствуют пользоватили с вхождением {user}:"
-            else:
-                return f"Отсутствуют пользоватили в отделе {depart} с вхождением {user}:"
 
+        for item in results1:
+            if item in results2:
+                results3.append(item)
+
+        if not tumbler1 and not tumbler2:
+            return jsonify(username=results1,
+                           id=results1_id,
+                           email=results1_email,
+                           department=results1_department,
+                           date_joined=results1_join)
+        elif tumbler1 and not tumbler2:
+            return jsonify(username=results1)
+        else:
+            return jsonify(username=results3)
 
     @app.route('/department', methods=['GET'])
     def departs_name():
@@ -76,14 +91,13 @@ def create_app():
             for unit in data.keys():
                 if unit == "Department":
                     for i in (data[unit].values()):
-                        dep_result1.append(i)
+                        if i not in dep_result1:
+                            dep_result1.append(i)
+        return jsonify(departments=dep_result1)
 
-        return jsonify('data: %s' % set(dep_result1))
-
-
-    # api.add_resource(Users, '/users')
-    # api.add_resource(Departments, '/departments')
     return app
+
+
 if __name__ == '__main__':
     app = create_app()
     app.run(host='0.0.0.0', port=8080)  # run our Flask app
