@@ -14,7 +14,7 @@ services:
 
     image: python:3
     network_mode: host
-    command: sh -c "pip3 install -r requirements_test.txt --no-cache-dir && pytest && tail -f /dev/null"
+    command: sh -c "pip3 install -r requirements_test.txt --no-cache-dir && pytest -n4 && tail -f /dev/null"
     working_dir: /test_compose
     volumes:
       - ./:/test_compose
