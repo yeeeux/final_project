@@ -45,6 +45,9 @@
 5 - requests
 6 - json
 7 - pytest-xdist
+8 - logging
+9 - os
+
 > Для корректной работы кода и всех библиотек должен быть установлен python не младше python 3.0
 
 ## Быстрый запуск:
@@ -60,6 +63,7 @@
 
     cd api 
 После чего необходимо через терминал прописать команду:
+Логи хранятся в файле logresults.txt
 
     pytest
 
@@ -94,4 +98,4 @@ ___
 После чего необходимо через терминал прописать команды:
 
     docker build -t getting-started .
-    docker run -dp 3000:3000 getting-started
+    docker run --network host -dp 3000:3000 getting-started

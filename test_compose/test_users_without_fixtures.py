@@ -41,8 +41,7 @@ def test_status_user2_negative():
 
 def test_text_users():
     rv = requests.get("http://localhost:8080/users")
-    assert rv.json() == {"date_joined": ["25.11.2020.23:15:46", "25.11.2020.23:15:46", "25.11.2020.23:15:46", "25.11.2020"
-                                                                                                            ".23:15:46"],
+    assert rv.json() == {'date_joined': ['10.12.2020  0:00:00', '25.01.2020  23:15:46', '11.11.1911  11:11:11', '2.5.2019  15:15:15'],
                        "department": ["ART-Tanks", "ART-Maps", "ART-Tanks", "ART-Maps"], "email": ["Pe3oH227@mail.ru",
                                                                                                    "pikriper@gmail.com",
                                                                                                    "pail-max@mail.ru",
