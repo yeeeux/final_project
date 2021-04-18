@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  api:
+    image: python:3
+    command: sh -c "pip3 install -r requirements.txt --no-cache-dir && python3 users.py"
+    ports:
+      - 8080:8080
+    working_dir: /api
+    volumes:
+      - ./:/api
+
+  tests:
+
+    image: python:3
+    network_mode: host
+    command: sh -c "pip3 install -r requirements_test.txt --no-cache-dir && pytest && tail -f /dev/null"
+    working_dir: /test_compose
+    volumes:
+      - ./:/test_compose
