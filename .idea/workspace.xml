@@ -2,7 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="686be87a-d6f8-4999-b307-e675743b6a03" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/test_compose/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/test_compose/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/requirements_test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/users.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_compose/users_data.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_users_without_fixtures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/api/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/test_users_without_fixtures.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_compose/test_users_without_fixtures.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
