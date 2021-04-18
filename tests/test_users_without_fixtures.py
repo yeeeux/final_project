@@ -1,11 +1,15 @@
 import pytest
 import requests
 import json
+import logging
+import os
 
-
+logging.basicConfig(level=logging.DEBUG)
+mylogger = logging.getLogger()
 
 def test_status_user():
     rv = requests.get("http://localhost:8080/users")
+    mylogger.info('Inside Setup')
     assert rv.status_code == 200
 
 
@@ -123,3 +127,8 @@ def test_text_department__with_filter_high_case():
 def test_text_department__negative():
     rv = requests.get("http://localhost:8080/department?name=kek")
     assert rv.json() == {"departments": []}
+
+if __name__ == '__main__':
+    mylogger.info(' About to start the tests ')
+    pytest.main(args=[os.path.abspath(__file__)])
+    mylogger.info(' Done executing the tests ')
