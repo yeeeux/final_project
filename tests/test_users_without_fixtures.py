@@ -69,7 +69,7 @@ def test_status_department_with_filter():
 
 def test_status_user2_negative():
     rv = requests.get("http://localhost:8080/ussers")
-    if rv.status_code == 200:
+    if rv.status_code == 404:
         LOGGER.warning('Passed')
     else:
         LOGGER.warning('Failed')

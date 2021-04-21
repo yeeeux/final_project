@@ -58,8 +58,6 @@ def create_app():
                     for i in (data[depa].keys()):
                         if depart == data[depa][i].lower():
                             results2.append(data['username'][i])
-        print(results1)
-        print(results2)
 
         for item in results1:
             if item in results2:
