@@ -1,6 +1,12 @@
 from flask import Flask
 from flask_restful import Api, Resource
 import csv
+import configparser
+from functools import reduce
+
+parser = configparser.ConfigParser()
+parser.read("C:\\git\\final_project\\test_framework\\config.ini")
+URL = parser.get("test_framework", "SERVICE_URL")
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,22 +20,40 @@ with open('users_data.csv', "r") as file:
         data_users.update({line["username"]: line})
         if line["Department"] not in departments_names:
             departments_names.append(line["Department"])
-print(data_users)
-print(departments_names)
+# definition host and port from config.ini file
+host = []
+port = []
+for k in range(7, len(URL)):
+    if URL[k] != ":":
+        host.append(URL[k])
+        count = k
+    else:
+        break
+for j in range(9, len(URL) - 1):
+    if j > count + 1:
+        port.append(URL[j])
+host = reduce(lambda x, y: x + y, host)
+port = reduce(lambda x, y: x + y, port)
 
 
 class Users(Resource):
     def get(self, user=None, department=None):
         users_list = []
-        if user is not None:
-            for users in data_users.keys():
-                if user.lower() in users.lower():
-                    users_list.append(users)
-            return users_list
-        elif department is not None:
+        try:
+            users_from_users_filter = list(filter(lambda x: user.lower() in x.lower(), data_users.keys()))
+        except AttributeError:
+            pass
+        try:
             for departaments in data_users.keys():
                 if department.lower() in data_users[departaments]["Department"].lower():
                     users_list.append(departaments)
+        except AttributeError:
+            pass
+        if user is not None and department is not None:
+            return list(set(users_from_users_filter).intersection(users_list))
+        elif user is not None:
+            return users_from_users_filter
+        elif department is not None:
             return users_list
         else:
             return data_users
@@ -37,19 +61,16 @@ class Users(Resource):
 
 class Departments(Resource):
     def get(self, name=None):
-        department_list = []
         if name is not None:
-            for departaments in departments_names:
-                if name.lower() in departaments.lower():
-                    department_list.append(departaments)
-            return department_list
+            return list(filter(lambda x: name.lower() in x.lower(), departments_names))
         else:
             return departments_names
 
 
-api.add_resource(Users, "/users", "/users/username/<string:user>", "/users/departament/<string:department>",
-                 endpoint="users")
+api.add_resource(Users, "/users", "/users/username/<string:user>", "/users/department/<string:department>",
+                 "/users/department/<string:department>/username/<string:user>",
+                 "/users/username/<string:user>/department/<string:department>", endpoint="users")
 api.add_resource(Departments, "/department", "/department/name/<string:name>", endpoint="department")
 
 if __name__ == '__main__':
-    app.run(debug=True)  # run our Flask app
+    app.run(host=host, port=port, debug=True)  # run our Flask app
