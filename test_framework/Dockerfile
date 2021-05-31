@@ -1,8 +1,9 @@
-FROM python:3
+FROM python:3.9
+RUN mkdir -p /tests
 WORKDIR /tests
-COPY requirements.txt /tests
-RUN  pip3 install -r requirements.txt --no-cache-dir
 COPY . /tests
+RUN  pip3 install -r requirements.txt --no-cache-dir
+ENTRYPOINT ["pytest","tests.py"]
 
-ENTRYPOINT ["python3"]
-CMD ["test_users_without_fixtures.py"]
+
+

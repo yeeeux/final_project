@@ -1,8 +1,9 @@
-FROM python:3
+FROM python:3.9
+RUN mkdir -p /api
 WORKDIR /api
-COPY requirements.txt /api
-RUN pip3 install -r requirements.txt --no-cache-dir
-ENTRYPOINT ["python", "./users.py"]
-# Мы хотим пробрасывать порт 8080
-EXPOSE 8080
 COPY . /api
+RUN pip3 install -r requirements.txt --no-cache-dir
+ENTRYPOINT ["python", "users.py"]
+# We want port 8080
+EXPOSE 8080
+

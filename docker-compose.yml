@@ -1,21 +1,26 @@
-version: "3.7"
-
+version: "3.9"
+volumes:
+  log_volume:
 services:
   api:
-    image: python:3
-    command: sh -c "pip3 install -r requirements.txt --no-cache-dir && python3 users.py"
+    build: api
+    restart: always
     ports:
-      - 8080:8080
-    working_dir: /api
-    volumes:
-      - ./:/api
-
+    - 8080:8080
+    networks:
+      proxy.front-network:
+    links:
+      - tests
   tests:
-
-    image: python:3
-    network_mode: host
-    command: sh -c "pip3 install -r requirements_test.txt --no-cache-dir && pytest -n4 && tail -f /dev/null"
-    working_dir: /test_compose
+    build: test_framework
+    environment:
+      - SERVICE_URL=http://0.0.0.0:8080/
     volumes:
-      - ./:/test_compose
+      - log_volume:/logs
+    networks:
+      proxy.front-network:
+
+networks:
+  proxy.front-network:
+    driver: bridge
 

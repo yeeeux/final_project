@@ -6,7 +6,7 @@ from client_class import DepartClient
 import configparser
 
 parser = configparser.ConfigParser()
-parser.read("C:\\git\\final_project\\test_framework\\config.ini")
+parser.read("config.ini")
 URL = parser.get("test_framework", "SERVICE_URL")
 
 

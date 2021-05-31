@@ -1,12 +1,12 @@
 from flask import Flask
 from flask_restful import Api, Resource
 import csv
-import configparser
+# import configparser
 from functools import reduce
 
-parser = configparser.ConfigParser()
-parser.read("C:\\git\\final_project\\test_framework\\config.ini")
-URL = parser.get("test_framework", "SERVICE_URL")
+# parser = configparser.ConfigParser()
+# parser.read("C:\\git\\final_project\\test_framework\\config.ini")
+# URL = parser.get("test_framework", "SERVICE_URL")
 
 app = Flask(__name__)
 api = Api(app)
@@ -20,20 +20,20 @@ with open('users_data.csv', "r") as file:
         data_users.update({line["username"]: line})
         if line["Department"] not in departments_names:
             departments_names.append(line["Department"])
-# definition host and port from config.ini file
-host = []
-port = []
-for k in range(7, len(URL)):
-    if URL[k] != ":":
-        host.append(URL[k])
-        count = k
-    else:
-        break
-for j in range(9, len(URL) - 1):
-    if j > count + 1:
-        port.append(URL[j])
-host = reduce(lambda x, y: x + y, host)
-port = reduce(lambda x, y: x + y, port)
+# # definition host and port from config.ini file
+# host = []
+# port = []
+# for k in range(7, len(URL)):
+#     if URL[k] != ":":
+#         host.append(URL[k])
+#         count = k
+#     else:
+#         break
+# for j in range(9, len(URL) - 1):
+#     if j > count + 1:
+#         port.append(URL[j])
+# host = reduce(lambda x, y: x + y, host)
+# port = reduce(lambda x, y: x + y, port)
 
 
 class Users(Resource):
@@ -69,4 +69,4 @@ api.add_resource(Users, "/users", "/users/username/<string:user>", "/users/depar
 api.add_resource(Departments, "/department", "/department/name/<string:name>", endpoint="department")
 
 if __name__ == '__main__':
-    app.run(host=host, port=port, debug=True)  # run our Flask app
+    app.run(host= "0.0.0.0", port=8080, debug=True)  # run our Flask app
