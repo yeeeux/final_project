@@ -1,142 +1,133 @@
-import pytest
-import requests
-import logging
-from _pytest.runner import CallInfo
-
-
-
-
 
 def test_status_user(client):
-    rv =client("ye","ART")
-    print(rv)
-    assert rv.json() == "200"
-
-
-def test_status_user_with_filter():
-    rv = requests.get("http://localhost:8080/users?username=Pe")
+    rv = client()
     assert rv.status_code == 200
 
 
-def test_status_user_with_filter1():
-    rv = requests.get("http://localhost:8080/users?username=Pe&department=ART-Tanks")
+def test_status_user_with_filter(client):
+    rv = client("pe")
     assert rv.status_code == 200
 
 
-def test_status_user_with_filter2():
-    rv = requests.get("http://localhost:8080/users?department=ART-Tanks")
+def test_status_user_with_filter1(client):
+    rv = client("pe", "ART-Tanks")
     assert rv.status_code == 200
 
 
-def test_status_department():
-    rv = requests.get("http://localhost:8080/department")
+def test_status_user_with_filter2(client):
+    rv = client(None, "ART-Tanks")
     assert rv.status_code == 200
 
 
-def test_status_department_with_filter():
-    rv = requests.get("http://localhost:8080/department?name=ART")
-    assert rv.status_code == 200
+def test_status_department(depart_client):
+    rv = depart_client()
+    assert 200 == rv.status_code
 
 
-def test_status_user2_negative():
-    rv = requests.get("http://localhost:8080/ussers")
-    assert rv.status_code == 404
+def test_status_department_with_filter(depart_client):
+    rv = depart_client("ART")
+    assert 200 == rv.status_code
 
 
-def test_text_users():
-    rv = requests.get("http://localhost:8080/users")
+def test_text_users(client):
+    rv = client()
     assert rv.json() == {
-        'date_joined': ['10.12.2020  0:00:00', '25.01.2020  23:15:46', '11.11.1911  11:11:11', '2.5.2019  15:15:15'],
-        "department": ["ART-Tanks", "ART-Maps", "ART-Tanks", "ART-Maps"], "email": ["Pe3oH227@mail.ru",
-                                                                                    "pikriper@gmail.com",
-                                                                                    "pail-max@mail.ru",
-                                                                                    "urets@yandex.ru"],
-        "id": ["a1b", "a2c", "b1b", "b2c"], "username": ["Pe3oH", "Tanya_5", "yeux", "stelhanter"]}
+        "Pe3oH": {
+            "userId": "a1b",
+            "username": "Pe3oH",
+            "email": "Pe3oH227@mail.ru",
+            "Department": "ART-Tanks",
+            "data_joined": "10.12.2020  0:00:00"
+        },
+        "Tanya_5": {
+            "userId": "a2c",
+            "username": "Tanya_5",
+            "email": "pikriper@gmail.com",
+            "Department": "ART-Maps",
+            "data_joined": "25.01.2020  23:15:46"
+        },
+        "yeux": {
+            "userId": "b1b",
+            "username": "yeux",
+            "email": "pail-max@mail.ru",
+            "Department": "ART-Tanks",
+            "data_joined": "11.11.1911  11:11:11"
+        },
+        "stelhanter": {
+            "userId": "b2c",
+            "username": "stelhanter",
+            "email": "urets@yandex.ru",
+            "Department": "ART-Maps",
+            "data_joined": "2.5.2019  15:15:15"
+        }
+    }
 
 
-def test_text_users_with_filter_positive():
-    rv = requests.get("http://localhost:8080/users?username=pe")
-
-    assert rv.json() == {'username': ['Pe3oH']}
-
-
-def test_text_users_with_filter2_positive():
-    rv = requests.get("http://localhost:8080/users?department=ART-Tanks")
-
-    assert rv.json() == {'username': ['Pe3oH', 'yeux']}
+def test_text_users_with_filter_positive(client):
+    rv = client("Pe")
+    assert rv.json() == ['Pe3oH']
 
 
-def test_text_users_with_filter3_positive():
-    rv = requests.get("http://localhost:8080/users?username=Pe&department=ART-Tanks")
-    assert rv.json() == {'username': ['Pe3oH']}
+def test_text_users_with_filter2_positive(client):
+    rv = client(None, "ART-Tanks")
+    assert rv.json() == ['Pe3oH', 'yeux']
 
 
-def test_text_users_with_filter3_positive_revert():
-    rv = requests.get("http://localhost:8080/users?department=ART-Tanks&username=Pe")
-
-    assert rv.json() == {'username': ['Pe3oH']}
-
-
-def test_text_users_with_filter6_low_case_positive():
-    rv = requests.get("http://localhost:8080/users?username=ye&department=art-tanks")
-    assert rv.json() == {'username': ['yeux']}
+def test_text_users_with_filter3_positive(client):
+    rv = client("Pe", "ART-Tanks")
+    assert rv.json() == ['Pe3oH']
 
 
-def test_text_users_with_filter6_high_case_positive():
-    rv = requests.get("http://localhost:8080/users?username=YE&department=ART-TANKS")
-
-    assert rv.json() == {'username': ['yeux']}
-
-
-def test_text_users_with_filter4_negative():
-    rv = requests.get("http://localhost:8080/users?username=1111")
-
-    assert rv.json() == {'username': []}
+def test_text_users_with_filter6_low_case_positive(client):
+    rv = client("ye", "art-tanks")
+    assert rv.json() == ['yeux']
 
 
-def test_text_users_with_filter5_negative():
-    rv = requests.get("http://localhost:8080/users?username=1111&department=ART-Maps")
-
-    assert rv.json() == {'username': []}
-
-
-def test_text_users_with_filter7_negative():
-    rv = requests.get("http://localhost:8080/users?department=ART-keks")
-
-    assert rv.json() == {'username': []}
+def test_text_users_with_filter6_high_case_positive(client):
+    rv = client("YE", "ART-TANKS")
+    assert rv.json() == ['yeux']
 
 
-def test_text_users_with_filter8_negative():
-    rv = requests.get("http://localhost:8080/users?username=ye&department=art-keks")
-
-    assert rv.json() == {'username': []}
-
-
-def test_text_department_positive1():
-    rv = requests.get("http://localhost:8080/department")
-
-    assert rv.json() == {"departments": ["ART-Tanks", "ART-Maps"]}
+def test_text_users_with_filter4_negative(client):
+    rv = client("1111")
+    assert rv.json() == []
 
 
-def test_text_department__with_filterpositive2():
-    rv = requests.get("http://localhost:8080/department?name=Tanks")
-
-    assert rv.json() == {"departments": ["ART-Tanks"]}
-
-
-def test_text_department__with_filter_low_case():
-    rv = requests.get("http://localhost:8080/department?name=tanks")
-
-    assert rv.json() == {"departments": ["ART-Tanks"]}
+def test_text_users_with_filter5_negative(client):
+    rv = client("1111", "ART-Maps")
+    assert [] == rv.json()
 
 
-def test_text_department__with_filter_high_case():
-    rv = requests.get("http://localhost:8080/department?name=tanks")
+def test_text_users_with_filter7_negative(client):
+    rv = client(None, "ART-keks")
+    assert rv.json() == []
 
-    assert rv.json() == {"departments": ["ART-Tanks"]}
+
+def test_text_users_with_filter8_negative(client):
+    rv = client("ye", "art-keks")
+    assert rv.json() == []
 
 
-def test_text_department__negative():
-    rv = requests.get("http://localhost:8080/department?name=kek")
+def test_text_department_positive1(depart_client):
+    rv = depart_client()
+    assert rv.json() == ["ART-Tanks", "ART-Maps1"]
 
-    assert rv.json() == {"departments": []}
+
+def test_text_department_with_filterpositive2(depart_client):
+    rv = depart_client("Tanks")
+    assert rv.json() == ["ART-Tanks"]
+
+
+def test_text_department_with_filter_low_case(depart_client):
+    rv = depart_client("tanks")
+    assert rv.json() == ["ART-Tanks"]
+
+
+def test_text_department_with_filter_high_case(depart_client):
+    rv = depart_client("TANKS")
+    assert rv.json() == ["ART-Tanks"]
+
+
+def test_text_department_negative(depart_client):
+    rv = depart_client("kek")
+    assert rv.json() == []

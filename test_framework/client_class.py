@@ -19,4 +19,14 @@ class UserClient:
         return response
 
 
+class DepartClient:
 
+    def __init__(self, url):
+        self.url = url
+
+    def get_departs(self, name=None):
+        if name is None:
+            response = requests.get(self.url + "/department")
+        elif name is not None:
+            response = requests.get(self.url + "/department/name/" + f"{str(name)}")
+        return response
