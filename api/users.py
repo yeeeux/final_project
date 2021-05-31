@@ -1,7 +1,6 @@
-from flask import Flask
-from flask_restful import Api, Resource
+from flask import Flask, request, jsonify
+from flask_restful import Api
 import csv
-
 
 app = Flask(__name__)
 api = Api(app)
@@ -15,8 +14,16 @@ with open('users_data.csv', "r") as file:
         if line["Department"] not in departments_names:
             departments_names.append(line["Department"])
 
-class Users(Resource):
-    def get(self, user=None, department=None):
+
+def create_api():
+    app = Flask(__name__)
+
+    @app.route('/users', methods=['GET'])
+    def users_name(user=None, department=None):
+        if 'username' in request.args:
+            user = str(request.args['username']).lower()
+        if 'department' in request.args:
+            department = str(request.args['department']).lower()
         users_list = []
         if user is not None:
             users_from_users_filter = list(filter(lambda x: user.lower() in x.lower(), data_users.keys()))
@@ -25,27 +32,25 @@ class Users(Resource):
                 if department.lower() in data_users[departaments]["Department"].lower():
                     users_list.append(departaments)
         if user is not None and department is not None:
-            return list(set(users_from_users_filter).intersection(users_list))
+            return jsonify(list(set(users_from_users_filter).intersection(users_list)))
         elif user is not None:
-            return users_from_users_filter
+            return jsonify(users_from_users_filter)
         elif department is not None:
-            return users_list
+            return jsonify(users_list)
         else:
-            return data_users
+            return jsonify(data_users)
 
-
-class Departments(Resource):
-    def get(self, name=None):
+    @app.route('/department', methods=['GET'])
+    def departs_name(name=None):
+        if 'name' in request.args:
+            name = str(request.args['name']).lower()
         if name is not None:
-            return list(filter(lambda x: name.lower() in x.lower(), departments_names))
+            return jsonify(list(filter(lambda x: name.lower() in x.lower(), departments_names)))
         else:
-            return departments_names
+            return jsonify(departments_names)
+    return app
 
-
-api.add_resource(Users, "/users", "/users/username/<string:user>", "/users/department/<string:department>",
-                 "/users/department/<string:department>/username/<string:user>",
-                 "/users/username/<string:user>/department/<string:department>", endpoint="users")
-api.add_resource(Departments, "/department", "/department/name/<string:name>", endpoint="department")
 
 if __name__ == '__main__':
-    app.run(host= "0.0.0.0", port=8080, debug=True)  # run our Flask app
+    app = create_api()
+    app.run(host="0.0.0.0", port=8080, debug=True)  # run our Flask app
