@@ -39,16 +39,12 @@ port = reduce(lambda x, y: x + y, port)
 class Users(Resource):
     def get(self, user=None, department=None):
         users_list = []
-        try:
+        if user is not None:
             users_from_users_filter = list(filter(lambda x: user.lower() in x.lower(), data_users.keys()))
-        except AttributeError:
-            pass
-        try:
+        if department is not None:
             for departaments in data_users.keys():
                 if department.lower() in data_users[departaments]["Department"].lower():
                     users_list.append(departaments)
-        except AttributeError:
-            pass
         if user is not None and department is not None:
             return list(set(users_from_users_filter).intersection(users_list))
         elif user is not None:

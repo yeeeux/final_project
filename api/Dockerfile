@@ -2,9 +2,7 @@ FROM python:3
 WORKDIR /api
 COPY requirements.txt /api
 RUN pip3 install -r requirements.txt --no-cache-dir
-#&& \
-#    apt-get update && \
-#        apt-get -y install python3-pandas
+ENTRYPOINT ["python", "./users.py"]
+# Мы хотим пробрасывать порт 8080
+EXPOSE 8080
 COPY . /api
-ENTRYPOINT ["python3"]
-CMD ["users.py"]
