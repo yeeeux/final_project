@@ -1,11 +1,17 @@
 import json
 from flask import Flask, request, jsonify
+import logging
+logging.basicConfig(filename="api.log", level=logging.INFO, format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%("
+                                                                   f"filename)s).%(funcName)s(%(lineno)d) - %("
+                                                                   f"message)s")
+logger = logging.getLogger(__name__)
 
 
 app = Flask(__name__)
 
 
 with open("users_data.json", "r") as file:
+    logger.info("File with data was opened")
     data_users = json.load(file)
 
 
@@ -15,11 +21,13 @@ def return_value(value: str):
     :param value:
     :return: list with values
     """
+    logger.info(f"function 'return_value' get {value}")
     answer_list = []
     for item in data_users["items"]:
         if value in item.keys():
             if item[value] not in answer_list:
                 answer_list.append(item[value])
+    logger.info(f"function 'return_value' return {answer_list}")
     return answer_list
 
 
@@ -30,6 +38,7 @@ def return_another_value(find: str, refund: str):
     :param refund:
     :return: dictionary with values from database with pair refund:find
     """
+    logger.info(f"function 'return_another_value' get {find, refund}")
     answer_1 = []
     answer_2 = []
     for item in data_users["items"]:
@@ -37,6 +46,7 @@ def return_another_value(find: str, refund: str):
             answer_1.append(item[find])
         if refund in item.keys():
             answer_2.append(item[refund])
+    logger.info(f"function 'return_another_value' return {dict(zip(answer_2, answer_1))}")
     return dict(zip(answer_2, answer_1))
 
 
@@ -45,6 +55,7 @@ def create_api():
 
     @app_api.route('/users', methods=['GET'])
     def users_name(user=None, department=None):
+
         users_list = []
         users_from_users_filter = []
         # Getting the values username and department from get request
@@ -52,6 +63,7 @@ def create_api():
             user = str(request.args['username']).lower()
         if 'department' in request.args:
             department = str(request.args['department']).lower()
+        logger.info(f"function 'users_name' get username = {user}, department = {department}")
         # Searching in database
         if user is not None:
             users_from_users_filter = list(filter(lambda x: user.lower() in x.lower(), return_value("username")))
@@ -73,6 +85,7 @@ def create_api():
     def departs_name(name=None):
         if 'name' in request.args:
             name = str(request.args['name']).lower()
+            logger.info(f"function 'departs_name' get name = {name}")
         if name is not None:
             return jsonify(list(filter(lambda x: name.lower() in x.lower(), return_value("Department"))))
         else:
@@ -84,4 +97,3 @@ def create_api():
 if __name__ == '__main__':
     app = create_api()
     app.run(debug=True)  # run our Flask app
-
