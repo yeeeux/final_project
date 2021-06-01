@@ -3,24 +3,25 @@ volumes:
   log_volume:
 services:
   api:
+    ports:
+      - 8080:8080
     build: api
     restart: always
-    ports:
-    - 8080:8080
     networks:
-      proxy.front-network:
-    links:
-      - tests
+      - net_my_net
+
   tests:
     build: test_framework
-    environment:
-      - SERVICE_URL=http://0.0.0.0:8080/
+
     volumes:
       - log_volume:/logs
     networks:
-      proxy.front-network:
+      - net_my_net
+    links:
+      - api
 
 networks:
-  proxy.front-network:
+  net_my_net:
     driver: bridge
+
 

@@ -32,34 +32,36 @@ def test_status_department_with_filter(depart_client):
 def test_text_users(client):
     rv = client()
     assert rv.json() == {
-        "Pe3oH": {
-            "userId": "a1b",
-            "username": "Pe3oH",
-            "email": "Pe3oH227@mail.ru",
-            "Department": "ART-Tanks",
-            "data_joined": "10.12.2020  0:00:00"
-        },
-        "Tanya_5": {
-            "userId": "a2c",
-            "username": "Tanya_5",
-            "email": "pikriper@gmail.com",
-            "Department": "ART-Maps",
-            "data_joined": "25.01.2020  23:15:46"
-        },
-        "yeux": {
-            "userId": "b1b",
-            "username": "yeux",
-            "email": "pail-max@mail.ru",
-            "Department": "ART-Tanks",
-            "data_joined": "11.11.1911  11:11:11"
-        },
-        "stelhanter": {
-            "userId": "b2c",
-            "username": "stelhanter",
-            "email": "urets@yandex.ru",
-            "Department": "ART-Maps",
-            "data_joined": "2.5.2019  15:15:15"
-        }
+        "items": [
+            {
+                "Department": "ART-Tanks",
+                "data_joined": "10.12.2020  0:00:00",
+                "email": "Pe3oH227@mail.ru",
+                "userId": "a1b",
+                "username": "Pe3oH"
+            },
+            {
+                "Department": "ART-Maps",
+                "data_joined": "25.01.2020  23:15:46",
+                "email": "pikriper@gmail.com",
+                "userId": "a2c",
+                "username": "Tanya_5"
+            },
+            {
+                "Department": "ART-Maps",
+                "data_joined": "2.5.2019  15:15:15",
+                "email": "urets@yandex.ru",
+                "userId": "b2c",
+                "username": "stelhanter"
+            },
+            {
+                "Department": "ART-Tanks",
+                "data_joined": "11.11.1911  11:11:11",
+                "email": "pail-max@mail.ru",
+                "userId": "b1b",
+                "username": "yeux"
+            }
+        ]
     }
 
 
@@ -129,5 +131,5 @@ def test_text_department_with_filter_high_case(depart_client):
 
 
 def test_text_department_negative(depart_client):
-    rv = depart_client("kek")
+    rv = depart_client("jek")
     assert rv.json() == []

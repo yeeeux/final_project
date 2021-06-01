@@ -1,13 +1,10 @@
 import json
 from flask import Flask, request, jsonify
-from flask_restful import Api
 
 
 app = Flask(__name__)
-api = Api(app)
 
 
-departments_names = []
 with open("users_data.json", "r") as file:
     data_users = json.load(file)
 
@@ -86,4 +83,5 @@ def create_api():
 
 if __name__ == '__main__':
     app = create_api()
-    app.run(host="0.0.0.0", port=8080, debug=True)  # run our Flask app
+    app.run(debug=True)  # run our Flask app
+

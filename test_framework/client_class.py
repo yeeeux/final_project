@@ -1,4 +1,3 @@
-import configparser
 import requests
 
 
@@ -8,14 +7,15 @@ class UserClient:
         self.url = url
 
     def get_users(self, username=None, department=None):
+        response = None
         if username is not None and department is not None:
-            response = requests.get(self.url + f"/users/department/{department}/username/{username}")
+            response = requests.get(self.url + f"/users?username={str(username)}&department={str(department)}")
         elif username is None and department is None:
             response = requests.get(self.url + "/users")
         elif username is not None:
-            response = requests.get(self.url + "/users/username/" + f"{str(username)}")
+            response = requests.get(self.url + "/users?username=" + f"{str(username)}")
         elif department is not None:
-            response = requests.get(self.url + "/users/department/" + f"{str(department)}")
+            response = requests.get(self.url + "/users?department=" + f"{str(department)}")
         return response
 
 
@@ -25,8 +25,9 @@ class DepartClient:
         self.url = url
 
     def get_departs(self, name=None):
+        response = None
         if name is None:
             response = requests.get(self.url + "/department")
         elif name is not None:
-            response = requests.get(self.url + "/department/name/" + f"{str(name)}")
+            response = requests.get(self.url + "/department?name=" + f"{str(name)}")
         return response
