@@ -1,99 +1,84 @@
 import json
 from flask import Flask, request, jsonify
 import logging
-logging.basicConfig(filename="api.log", level=logging.INFO, format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%("
-                                                                   f"filename)s).%(funcName)s(%(lineno)d) - %("
-                                                                   f"message)s")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=f"%(asctime)s - [%(levelname)s] - %(name)s - "
+           f"(%("f"filename)s).%(funcName)s(%(lineno)d) - "
+           f"%("f"message)s")
+
 logger = logging.getLogger(__name__)
-
-
-app = Flask(__name__)
-
 
 with open("users_data.json", "r") as file:
     logger.info("File with data was opened")
     data_users = json.load(file)
 
 
-def return_value(value: str):
+def find_user(key: str, value: str):
     """
-    Function for getting needed values from key: value
+    Function for search users
+    :param key:
     :param value:
-    :return: list with values
+    :return: needed users
     """
-    logger.info(f"function 'return_value' get {value}")
-    answer_list = []
-    for item in data_users["items"]:
-        if value in item.keys():
-            if item[value] not in answer_list:
-                answer_list.append(item[value])
-    logger.info(f"function 'return_value' return {answer_list}")
-    return answer_list
+    logger.info(f"function 'return_value' get {key}")
+    # Getting all list of users
+    value_list = [item[key] for item in data_users["users"] if key in item.keys()]
+    # Find in all users value
+    answer = list(set(filter(lambda x: value.lower() in x.lower(), value_list)))
+    return answer
 
 
-def return_another_value(find: str, refund: str):
+def find_user_not_from_username(find: str, refund: str, value: str):
     """
-    Function for getting a dictionary with a pair refund:find
-    :param find:
-    :param refund:
-    :return: dictionary with values from database with pair refund:find
+    Function for search users from any filter
+    :param find: What parameters we want getting
+    :param refund: What parameters we use for searching users
+    :param value: searching value
+    :return: needed users from some filter
     """
     logger.info(f"function 'return_another_value' get {find, refund}")
-    answer_1 = []
-    answer_2 = []
-    for item in data_users["items"]:
-        if find in item.keys():
-            answer_1.append(item[find])
-        if refund in item.keys():
-            answer_2.append(item[refund])
-    logger.info(f"function 'return_another_value' return {dict(zip(answer_2, answer_1))}")
-    return dict(zip(answer_2, answer_1))
+    # Getting list of users and list of departments
+    answer_1 = [item[find] for item in data_users["users"] if find in item.keys()]
+    answer_2 = [item[refund] for item in data_users["users"] if refund in item.keys()]
+    # getting dictionary with pair user:department
+    dictionary_values = dict(zip(answer_1, answer_2))
+    # Find needed users
+    answer = [item for item in dictionary_values.keys() if value.lower() in dictionary_values[item].lower()]
+    logger.info(f"function 'return_another_value' return {dictionary_values}")
+    return answer
 
 
 def create_api():
     app_api = Flask(__name__)
 
     @app_api.route('/users', methods=['GET'])
-    def users_name(user=None, department=None):
+    def users_name():
+        user = request.args.get("username")
+        department = request.args.get("department")
 
-        users_list = []
-        users_from_users_filter = []
-        # Getting the values username and department from get request
-        if 'username' in request.args:
-            user = str(request.args['username']).lower()
-        if 'department' in request.args:
-            department = str(request.args['department']).lower()
         logger.info(f"function 'users_name' get username = {user}, department = {department}")
         # Searching in database
         if user is not None:
-            users_from_users_filter = list(filter(lambda x: user.lower() in x.lower(), return_value("username")))
+            return jsonify(find_user("username", user))
         if department is not None:
-            buffer_dictionary = return_another_value("Department", "username")
-            for item in buffer_dictionary.keys():
-                if department.lower() in buffer_dictionary[item].lower():
-                    users_list.append(item)
-        if user is not None and department is not None:
-            return jsonify(list(set(users_from_users_filter).intersection(users_list)))
-        elif user is not None:
-            return jsonify(users_from_users_filter)
-        elif department is not None:
-            return jsonify(users_list)
+            return jsonify(find_user_not_from_username("username", "department", department))
         else:
             return jsonify(data_users)
 
     @app_api.route('/department', methods=['GET'])
-    def departs_name(name=None):
-        if 'name' in request.args:
-            name = str(request.args['name']).lower()
-            logger.info(f"function 'departs_name' get name = {name}")
+    def departs_name():
+        name = request.args.get("name")
+        logger.info(f"function 'departs_name' get name = {name}")
         if name is not None:
-            return jsonify(list(filter(lambda x: name.lower() in x.lower(), return_value("Department"))))
+            return jsonify(find_user("department", name))
         else:
-            return jsonify(return_value("Department"))
+            return jsonify(list(set(item["department"] for item in data_users["users"] if "department" in item.keys())))
 
     return app_api
 
 
 if __name__ == '__main__':
     app = create_api()
-    app.run(debug=True)  # run our Flask app
+    app.run(host="0.0.0.0", port=8000, debug=True)  # run our Flask app
