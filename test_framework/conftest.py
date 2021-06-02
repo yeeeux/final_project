@@ -11,13 +11,13 @@ default_URL = parser.get("test_framework", "SERVICE_URL")
 URL = os.environ.get("SERVICE_URL", default_URL)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def client():
     app = UserClient(URL)
     return app.get_users
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def depart_client():
     app = DepartClient(URL)
     return app.get_departs

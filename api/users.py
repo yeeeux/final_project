@@ -2,11 +2,11 @@ import json
 from flask import Flask, request, jsonify
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format=f"%(asctime)s - [%(levelname)s] - %(name)s - "
-           f"(%("f"filename)s).%(funcName)s(%(lineno)d) - "
-           f"%("f"message)s")
+logging.basicConfig(filename="api.log",
+                    level=logging.ERROR,
+                    format=f"%(asctime)s - [%(levelname)s] - %(name)s - "
+                           f"(%("f"filename)s).%(funcName)s(%(lineno)d) - "
+                           f"%("f"message)s")
 
 logger = logging.getLogger(__name__)
 
