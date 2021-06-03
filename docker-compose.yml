@@ -3,25 +3,29 @@ volumes:
   log_volume:
 services:
   api:
-    ports:
-      - 8080:8080
     build: api
-    restart: always
+    expose:
+      - 8000
+    volumes:
+      - log_volume:/logs_api
     networks:
-      - net_my_net
+      - privet
+    restart: always
+
 
   tests:
     build: test_framework
-
     volumes:
       - log_volume:/logs
     networks:
-      - net_my_net
-    links:
-      - api
+      - privet
+
 
 networks:
-  net_my_net:
+  privet:
     driver: bridge
+
+
+
 
 
