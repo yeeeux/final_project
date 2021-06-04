@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import logging
 
 logging.basicConfig(filename="api.log",
-                    level=logging.ERROR,
+                    level=logging.INFO,
                     format=f"%(asctime)s - [%(levelname)s] - %(name)s - "
                            f"(%("f"filename)s).%(funcName)s(%(lineno)d) - "
                            f"%("f"message)s")
@@ -24,11 +24,12 @@ def get_user_from_username(
     :param username: Username that we want to find in data.
     :return: list of users with "username" inside of them.
     """
-    logger.info(f"function 'return_value' get {data_filter}")
+    logger.info(f"function 'get_user_from_username' get: {data_filter}, {username}")
     # Getting all list of users
     value_list = [item[data_filter] for item in data_users["users"] if data_filter in item.keys()]
     # Find in all users value
     answer = list(set(filter(lambda user: username.lower() in user.lower(), value_list)))
+    logger.info(f"function 'get_user_from_username' return: {answer}")
     return answer
 
 
@@ -44,7 +45,7 @@ def get_user_from_other_param(
 
         :return: List of users with needed department
         """
-    logger.info(f"function 'return_another_value' get {return_param, choice_param}")
+    logger.info(f"get_user_from_other_param' get {return_param, choice_param, value_choice_param}")
     # Getting list of users and list of departments
     list_of_users = [item[return_param] for item in data_users["users"] if return_param in item.keys()]
     list_of_departments = [item[choice_param] for item in data_users["users"] if choice_param in item.keys()]
@@ -52,7 +53,7 @@ def get_user_from_other_param(
     dictionary_values = dict(zip(list_of_users, list_of_departments))
     # Find needed users
     answer = [item for item in dictionary_values.keys() if value_choice_param.lower() in dictionary_values[item].lower()]
-    logger.info(f"function 'return_another_value' return {dictionary_values}")
+    logger.info(f"function 'get_user_from_other_param' return {answer}")
     return answer
 
 
@@ -86,4 +87,4 @@ def create_api():
 
 if __name__ == '__main__':
     app = create_api()
-    app.run(host="0.0.0.0", port=8000, debug=True)  # run our Flask app
+    app.run(host="0.0.0.0", port=8000, debug=False)  # run our Flask app
