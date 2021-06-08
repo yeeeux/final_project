@@ -1,10 +1,9 @@
-FROM python:3
+FROM python:3.9
+RUN mkdir -p /api
 WORKDIR /api
-COPY requirements.txt /api
-RUN pip3 install -r requirements.txt --no-cache-dir
-#&& \
-#    apt-get update && \
-#        apt-get -y install python3-pandas
 COPY . /api
-ENTRYPOINT ["python3"]
-CMD ["users.py"]
+RUN pip3 install -r requirements.txt --no-cache-dir
+ENTRYPOINT ["python", "users.py"]
+# We want port 8000
+EXPOSE 8000
+

@@ -1,0 +1,31 @@
+version: "3.9"
+volumes:
+  log_volume:
+services:
+  api:
+    build: api
+    expose:
+      - 8000
+    volumes:
+      - log_volume:/logs_api
+    networks:
+      - my-net
+    restart: always
+
+
+  tests:
+    build: test_framework
+    volumes:
+      - log_volume:/logs
+    networks:
+      - my-net
+
+
+networks:
+  my-net:
+    driver: bridge
+
+
+
+
+

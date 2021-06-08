@@ -1,102 +1,92 @@
-import pandas as pd
+import json
 from flask import Flask, request, jsonify
-from flask_restful import Api
+import logging
 
-app = Flask(__name__)
-api = Api(app)
+logging.basicConfig(filename="api.log",
+                    level=logging.INFO,
+                    format=f"%(asctime)s - [%(levelname)s] - %(name)s - "
+                           f"(%("f"filename)s).%(funcName)s(%(lineno)d) - "
+                           f"%("f"message)s")
 
-data = pd.read_csv('users_data.csv')  # read CSV
-data = data.to_dict()  # convert dataframe to dictionary
+logger = logging.getLogger(__name__)
+
+with open("users_data.json", "r") as file:
+    logger.info("File with data was opened")
+    data_users = json.load(file)
 
 
-def create_app():
-    app = Flask(__name__)
+def get_user_by_username(
+        username: str = None
+        ) -> list:
+    """ Function for search users by username in data.
+    :param username: Username that we want to find in data.
+    :return: list of users with "username" inside of them.
+    """
+    logger.info(f"get: {username}")
+    suitable_users = [user for user in data_users["users"] if username.lower() in user["username"].lower()]
+    logger.info(f"return: {suitable_users}")
+    return suitable_users
 
-    @app.route('/users', methods=['GET'])
-    def users_name():
-        results1 = []
-        results1_id = []
-        results1_email = []
-        results1_department = []
-        results1_join = []
-        results2 = []
-        results3 = []
-        tumbler1 = False
-        tumbler2 = False
-        if 'username' in request.args:
-            user = str(request.args['username']).lower()
-            tumbler1 = True
 
-            for users in data.keys():
-                if users == "username":
-                    for i in (data[users].values()):
-                        if user in i.lower():
-                            results1.append(i)
+def get_user_by_department(
+        department: str
+        ) -> list:
+    """ Function for search users by department in data
+        :param department: User in department that we want to find in data.
+        :return: List of users with needed department
+        """
+    logger.info(f"get {department}")
+    suitable_users = [user for user in data_users["users"] if department.lower() in user["department"].lower()]
+    logger.info(f"return {suitable_users}")
+    return suitable_users
+
+
+def get_user_by_username_or_department(
+        username: str = None,
+        department: str = None
+        ) -> list:
+    """ Function for search users by department and username in data
+    :param department: User in department that we want to find in data.
+    :param username: Username that we want to find in data.
+    :return: list of users with "username" inside of them.
+    """
+    logger.info(f"get: {username, department}")
+    suitable_users = [user for user in data_users["users"] if username.lower() in user["username"].lower() and
+                      department.lower() in user["department"].lower()]
+    logger.info(f"return: {suitable_users}")
+    return suitable_users
+
+
+def create_api():
+    app_api = Flask(__name__)
+
+    @app_api.route('/users', methods=['GET'])
+    def users():
+        user = request.args.get("username")
+        department = request.args.get("department")
+        logger.info(f"function get username = {user}, department = {department}")
+        # Searching in database
+        if user and department:
+            return jsonify(get_user_by_username_or_department(user, department))
+        if user:
+            return jsonify(get_user_by_username(user))
+        if department:
+            return jsonify(get_user_by_department(department))
         else:
-            for unit in data.keys():
-                if unit == "username":
-                    for i in (data[unit].values()):
-                        results1.append(i)
-                elif unit == "userId":
-                    for i in (data[unit].values()):
-                        results1_id.append(i)
-                elif unit == "email":
-                    for i in (data[unit].values()):
-                        results1_email.append(i)
-                elif unit == "Department":
-                    for i in (data[unit].values()):
-                        results1_department.append(i)
-                elif unit == "data_joined":
-                    for i in (data[unit].values()):
-                        results1_join.append(i)
+            return jsonify(data_users)
 
-        if 'department' in request.args:
-            depart = str(request.args['department']).lower()
-            tumbler2 = True
-            for depa in data.keys():
-                if depa == "Department":
-                    for i in (data[depa].keys()):
-                        if depart == data[depa][i].lower():
-                            results2.append(data['username'][i])
-
-        for item in results1:
-            if item in results2:
-                results3.append(item)
-
-        if not tumbler1 and not tumbler2:
-            return jsonify(username=results1,
-                           id=results1_id,
-                           email=results1_email,
-                           department=results1_department,
-                           date_joined=results1_join)
-        elif tumbler1 and not tumbler2:
-            return jsonify(username=results1)
+    @app_api.route('/departments', methods=['GET'])
+    def departments():
+        departament_name = request.args.get("name")
+        logger.info(f"function get name = {departament_name}")
+        if departament_name:
+            return jsonify(get_user_by_username_or_department("department", departament_name))
         else:
-            return jsonify(username=results3)
+            return jsonify(list(set(item["department"] for item in data_users["users"] if "department" in item.keys())))
 
-    @app.route('/department', methods=['GET'])
-    def departs_name():
-        dep_result1 = []
-        if 'name' in request.args:
-            departament = str(request.args['name']).lower()
-
-            for departmen in data.keys():
-                if departmen == "Department":
-                    for i in (data[departmen].values()):
-                        if departament in i.lower():
-                            if i not in dep_result1:
-                                dep_result1.append(i)
-        else:
-            for unit in data.keys():
-                if unit == "Department":
-                    for i in (data[unit].values()):
-                        if i not in dep_result1:
-                            dep_result1.append(i)
-        return jsonify(departments=dep_result1)
-
-    return app
+    return app_api
 
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run(host='0.0.0.0', port=8080)  # run our Flask app
+    app = create_api()
+    app.run(host="0.0.0.0", port=8000, debug=False)  # run our Flask app
