@@ -15,70 +15,72 @@ with open("users_data.json", "r") as file:
     data_users = json.load(file)
 
 
-def get_user_from_username(
-        data_filter: str = None,
+def get_user_by_username(
         username: str = None) \
         -> list:
     """ Function for search users by username in data.
-    :param data_filter: Where in data we will search username.
     :param username: Username that we want to find in data.
     :return: list of users with "username" inside of them.
     """
-    logger.info(f"function 'get_user_from_username' get: {data_filter}, {username}")
-    # Getting all list of users
-    value_list = [item[data_filter] for item in data_users["users"] if data_filter in item.keys()]
-    # Find in all users value
-    answer = list(set(filter(lambda user: username.lower() in user.lower(), value_list)))
-    logger.info(f"function 'get_user_from_username' return: {answer}")
-    return answer
+    logger.info(f"get: {username}")
+    suitable_users = [user for user in data_users["users"] if username.lower() in user["username"].lower()]
+    logger.info(f"return: {suitable_users}")
+    return suitable_users
 
 
-def get_user_from_other_param(
-        return_param: str,
-        choice_param: str,
-        value_choice_param: str) \
+def get_user_by_department(
+        department: str) \
         -> list:
-    """ Function for search users by other parameter in data
-        :param return_param: What parameters we want getting
-        :param choice_param: What parameters we use for searching users
-        :param value_choice_param: searching value
-
+    """ Function for search users by department in data
+        :param department: User in department that we want to find in data.
         :return: List of users with needed department
         """
-    logger.info(f"get_user_from_other_param' get {return_param, choice_param, value_choice_param}")
-    # Getting list of users and list of departments
-    list_of_users = [item[return_param] for item in data_users["users"] if return_param in item.keys()]
-    list_of_departments = [item[choice_param] for item in data_users["users"] if choice_param in item.keys()]
-    # getting dictionary with pair user:department
-    dictionary_values = dict(zip(list_of_users, list_of_departments))
-    # Find needed users
-    answer = [item for item in dictionary_values.keys() if value_choice_param.lower() in dictionary_values[item].lower()]
-    logger.info(f"function 'get_user_from_other_param' return {answer}")
-    return answer
+    logger.info(f"get {department}")
+    suitable_users = [user for user in data_users["users"] if department.lower() in user["department"].lower()]
+    logger.info(f"return {suitable_users}")
+    return suitable_users
+
+
+def get_user_by_username_or_department(
+        username: str = None,
+        department: str = None) \
+        -> list:
+    """ Function for search users by department and username in data
+    :param department: User in department that we want to find in data.
+    :param username: Username that we want to find in data.
+    :return: list of users with "username" inside of them.
+    """
+    logger.info(f"get: {username, department}")
+    suitable_users = [user for user in data_users["users"] if username.lower() in user["username"].lower() and
+                      department.lower() in user["department"].lower()]
+    logger.info(f"return: {suitable_users}")
+    return suitable_users
 
 
 def create_api():
     app_api = Flask(__name__)
 
     @app_api.route('/users', methods=['GET'])
-    def users_name():
+    def users():
         user = request.args.get("username")
         department = request.args.get("department")
-        logger.info(f"function 'users_name' get username = {user}, department = {department}")
+        logger.info(f"function get username = {user}, department = {department}")
         # Searching in database
+        if user and department:
+            return jsonify(get_user_by_username_or_department(user, department))
         if user:
-            return jsonify(get_user_from_username("username", user))
+            return jsonify(get_user_by_username(user))
         if department:
-            return jsonify(get_user_from_other_param("username", "department", department))
+            return jsonify(get_user_by_department(department))
         else:
             return jsonify(data_users)
 
     @app_api.route('/departments', methods=['GET'])
-    def departs_name():
+    def departments():
         departament_name = request.args.get("name")
-        logger.info(f"function 'departs_name' get name = {departament_name}")
+        logger.info(f"function get name = {departament_name}")
         if departament_name:
-            return jsonify(get_user_from_username("department", departament_name))
+            return jsonify(get_user_by_username_or_department("department", departament_name))
         else:
             return jsonify(list(set(item["department"] for item in data_users["users"] if "department" in item.keys())))
 

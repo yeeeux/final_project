@@ -10,6 +10,5 @@ def test_status_department(client):
 
 
 def test_random_user(random_user_data, client):
-    user = random_user_data
-    response = client(user)
-    assert response.json() == user.split()
+    response = client(random_user_data['username'])
+    assert response.json()[0] == random_user_data

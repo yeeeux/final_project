@@ -31,4 +31,4 @@ def random_user_data():
         data_users = json.load(file)
     max_value = len(data_users["users"])-1
     random_value = randint(0, max_value)
-    return data_users["users"][random_value]["username"]
+    return data_users["users"][random_value]

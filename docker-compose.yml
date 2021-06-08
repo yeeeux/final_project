@@ -9,7 +9,7 @@ services:
     volumes:
       - log_volume:/logs_api
     networks:
-      - privet
+      - my-net
     restart: always
 
 
@@ -18,11 +18,11 @@ services:
     volumes:
       - log_volume:/logs
     networks:
-      - privet
+      - my-net
 
 
 networks:
-  privet:
+  my-net:
     driver: bridge
 
 
