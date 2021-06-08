@@ -16,8 +16,8 @@ with open("users_data.json", "r") as file:
 
 
 def get_user_by_username(
-        username: str = None) \
-        -> list:
+        username: str = None
+        ) -> list:
     """ Function for search users by username in data.
     :param username: Username that we want to find in data.
     :return: list of users with "username" inside of them.
@@ -29,8 +29,8 @@ def get_user_by_username(
 
 
 def get_user_by_department(
-        department: str) \
-        -> list:
+        department: str
+        ) -> list:
     """ Function for search users by department in data
         :param department: User in department that we want to find in data.
         :return: List of users with needed department
@@ -43,8 +43,8 @@ def get_user_by_department(
 
 def get_user_by_username_or_department(
         username: str = None,
-        department: str = None) \
-        -> list:
+        department: str = None
+        ) -> list:
     """ Function for search users by department and username in data
     :param department: User in department that we want to find in data.
     :param username: Username that we want to find in data.
